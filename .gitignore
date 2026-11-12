@@ -1,5 +1,7 @@
 # 运行时产生的本地数据与缓存，不入仓库
-data/            # SQLite 数据库文件目录
-__pycache__/     # Python 字节码缓存
-*.pyc            # 编译中间文件
-node_modules/    # 前端依赖（阶段2使用）
+# 注意：gitignore 不支持行内注释，注释必须独占一行
+data/
+__pycache__/
+*.pyc
+*.log
+node_modules/
