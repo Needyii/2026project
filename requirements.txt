@@ -1,0 +1,5 @@
+# 后端依赖清单（Python 3.13）
+fastapi>=0.115.0        # Web 框架：路由、依赖注入、WebSocket
+uvicorn[standard]>=0.32.0  # ASGI 服务器：承载 FastAPI 应用
+pyyaml>=6.0             # 解析 config.yaml 全局配置
+requests>=2.32.0        # 验证脚本 verify_phase1.py 使用

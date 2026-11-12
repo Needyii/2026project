@@ -1,0 +1,44 @@
+# ============================================================
+# 青麓景区客流调度智能体系统 - 全局配置文件
+# 约定：所有可变参数（密钥/地址/阈值）统一放这里，代码中禁止写死
+# ============================================================
+
+server:
+  host: "127.0.0.1"        # 服务监听地址（仅本机可访问）
+  port: 8000               # 服务监听端口
+
+database:
+  path: "data/qinglu.db"   # SQLite 数据库文件路径（相对项目根目录，自动创建）
+
+auth:
+  # 岗位访问令牌表：前端/调用方持 token 请求，后端据此映射角色并做权限拦截
+  # 红线3：不同角色严格按权限隔离，越界请求直接拦截（拦截行为见 backend/roles.py）
+  tokens:
+    yunying_zhuren:      "tok-ops-gulanlan-2026"       # 运营主任（顾明岚）——全权限
+    rukou_yindao:        "tok-guide-linyizhou-2026"    # 入口引导员（林亦舟）——仅入口数据
+    diaodu_yuan:         "tok-dispatch-tangyingqiu-2026" # 游客服务调度员（唐映秋）——全域密度
+    piaowu_gongchengshi: "tok-ticket-qinrui-2026"      # 票务数据工程师（秦芮）——票务/入园数据
+    anquan_fuzeren:      "tok-safety-fujing-2026"      # 安全负责人（傅景）——风险/预警
+    shanghu_daibiao:     "tok-merchant-yeshu-2026"     # 商户服务代表（叶书）——片区趋势
+
+llm:
+  enabled: false                                      # 阶段1关闭 LLM，先跑纯规则引擎兜底
+  base_url: "https://your-llm-api.example.com/v1"     # OpenAI 兼容接口地址占位，部署时替换
+  api_key: "sk-REPLACE-WITH-REAL-KEY"                 # 密钥只存配置文件，绝不写进代码
+  model: "deepseek-flash"                             # 模型名称
+
+simulation:
+  interval_seconds: 3       # 客流模拟刷新周期（秒）
+  congestion_ratio: 0.80    # 占容量比 >= 80% 判为"拥堵"（管理层口径：入口等待超标信号）
+  idle_ratio: 0.30          # 占容量比 <= 30% 判为"空区"（资源空置信号）
+  history_keep_hours: 24    # 流量历史保留时长（小时），过期清理，避免无限膨胀
+  # 区域清单：type 决定哪些角色可见（entrance=入口 / garden=游览区 / commercial=商户区）
+  # base 为模拟基础人数；注意这里只有"区域聚合人数"，不含任何个人数据（红线1/2）
+  regions:
+    - {id: entrance_north, name: "北入口",   type: entrance,   capacity: 3000, base: 2650}
+    - {id: entrance_south, name: "南入口",   type: entrance,   capacity: 3000, base: 2350}
+    - {id: garden_lake,    name: "湖畔区",   type: garden,     capacity: 2200, base: 260}
+    - {id: garden_forest,  name: "森林步道", type: garden,     capacity: 1500, base: 180}
+    - {id: garden_flower,  name: "花海园区", type: garden,     capacity: 1800, base: 220}
+    - {id: comm_food,      name: "美食街区", type: commercial, capacity: 1200, base: 520}
+    - {id: comm_shop,      name: "文创商街", type: commercial, capacity: 1000, base: 380}
